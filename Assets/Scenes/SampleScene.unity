@@ -385,6 +385,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2b1e9ccc6c8f504f95e6a1ce6231398, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mazeSize: {x: 10, y: 10}
+  cellSize: 0.5
 --- !u!1 &874441731
 GameObject:
   m_ObjectHideFlags: 0

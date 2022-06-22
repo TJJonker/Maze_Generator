@@ -1,4 +1,5 @@
 using UnityEngine;
+using Unity.Burst;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Collections;
@@ -11,13 +12,13 @@ public class Maze_Generator : MonoBehaviour
 
     private void Start()
     {
-        MazeCell[] mazeCells = GenerateMaze(mazeSize, cellSize);
+        MazeCell[] mazeCells = GenerateMaze(mazeSize, cellSize, 42);
         DrawMaze(mazeCells);
     }
 
-    public MazeCell[] GenerateMaze(Vector2Int mazeSize, float cellSize, int randomSeed = -1)
+    public MazeCell[] GenerateMaze(Vector2Int mazeSize, float cellSize, int randomSeed)
     {
-        Random random = randomSeed == -1 ? new Random() : new Random((uint)randomSeed);
+        Random random = new Random((uint)randomSeed);
 
         NativeArray<MazeCell> cells = new NativeArray<MazeCell>(mazeSize.x * mazeSize.y, Allocator.TempJob);
 
@@ -28,8 +29,9 @@ public class Maze_Generator : MonoBehaviour
             random = random
         };
 
+        var starttime = Time.realtimeSinceStartup;
         generateMaze.Run();
-
+        Debug.Log(Time.realtimeSinceStartup - starttime);
         MazeCell[] mazeCells = generateMaze.cells.ToArray();
 
         // Dispose Native Arrays
@@ -42,6 +44,8 @@ public class Maze_Generator : MonoBehaviour
     {
         foreach (var cell in mazeCells)
         {
+            //Debug.Log(cell.wallTop + " " + cell.wallLeft + " " + cell.wallBottom + " " + cell.wallRight);
+
             if (cell.wallTop) Debug.DrawLine(GetWorldPosition(cell.x, cell.y + 1), GetWorldPosition(cell.x + 1, cell.y + 1), Color.white, 100);
             if (cell.wallLeft) Debug.DrawLine(GetWorldPosition(cell.x, cell.y), GetWorldPosition(cell.x, cell.y + 1), Color.white, 100);
             if (cell.wallBottom) Debug.DrawLine(GetWorldPosition(cell.x, cell.y), GetWorldPosition(cell.x + 1, cell.y), Color.white, 100);
@@ -49,6 +53,7 @@ public class Maze_Generator : MonoBehaviour
         }
     }
 
+    [BurstCompile]
     public struct GenerateMazeJob : IJob
     {
         public int2 mazeSize;
@@ -58,6 +63,9 @@ public class Maze_Generator : MonoBehaviour
 
         public void Execute()
         {
+            NativeList<int> stack = new NativeList<int>(1, Allocator.Temp);
+            int currentCellIndex;
+
             for(int x = 0; x < mazeSize.x; x++)
             {
                 for(int y = 0; y < mazeSize.y; y++)
@@ -79,8 +87,31 @@ public class Maze_Generator : MonoBehaviour
                 }
             }
 
-            int currentCellIndex = 0;
+            stack.Add(0);
+            while(stack.Length > 0)
+            {
+                currentCellIndex = stack[stack.Length - 1];
+                stack.RemoveAt(stack.Length - 1);
+                stack.Capacity--;
 
+                SetIsVisited(true, currentCellIndex);
+
+                var nextCellIndex = CheckNeighbours(currentCellIndex);
+                
+                while(nextCellIndex != -1)
+                {
+                    SetIsVisited(true, nextCellIndex);
+                    stack.Add(currentCellIndex);
+
+                    // Debug.Log("Current: " + currentCellIndex + ", Next: " + nextCellIndex);
+                    RemoveWalls(currentCellIndex, nextCellIndex);
+                    currentCellIndex = nextCellIndex;
+
+                    nextCellIndex = CheckNeighbours(currentCellIndex);
+                }                
+            }
+
+            stack.Dispose();
         }
 
         private int CheckNeighbours(int currentCellIndex)
@@ -108,11 +139,51 @@ public class Maze_Generator : MonoBehaviour
         private int IsNeighbourUsable(int index)
             => index > -1 && !cells[index].isVisited ? index : -1;
 
-        public int CalculateIndex(int x, int y)
+        private int CalculateIndex(int x, int y)
         {
-            if (x < 0 || y < 0 || x > mazeSize.x || y > mazeSize.y) 
+            if (x < 0 || y < 0 || x > mazeSize.x - 1 || y > mazeSize.y - 1) 
                 return -1;
             return x + y * mazeSize.x;
+        }
+
+        private void SetIsVisited(bool IsVisited, int cellIndex)
+        {
+            MazeCell cell = cells[cellIndex];
+            cell.isVisited = IsVisited;
+            cells[cellIndex] = cell;
+        }
+
+        private void RemoveWalls(int currentCellIndex, int nextCellIndex)
+        {
+            var next = cells[nextCellIndex];
+            var current = cells[currentCellIndex];
+
+            var x = next.x - current.x;
+            if(x == 1)
+            {
+                current.wallRight = false;
+                next.wallLeft = false;
+            }
+            else if(x == -1)
+            {
+                current.wallLeft = false;
+                next.wallRight = false;
+            }
+
+            var y = next.y - current.y;
+            if(y == 1)
+            {
+                next.wallBottom = false;
+                current.wallTop = false;
+            }
+            else if(y == -1)
+            {
+                next.wallTop = false;
+                current.wallBottom = false;
+            }
+
+            cells[nextCellIndex] = next;
+            cells[currentCellIndex] = current;
         }
     }
 

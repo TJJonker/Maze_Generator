@@ -2518,7 +2518,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   informationCollector: {fileID: 1275731888}
-  WallPrefab: {fileID: 5126366151036762067, guid: 14f04b8bbda33074aac7b712345b5a86, type: 3}
+  meshFilter: {fileID: 885961960}
 --- !u!1 &885961958
 GameObject:
   m_ObjectHideFlags: 0

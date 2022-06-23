@@ -7,14 +7,6 @@ using Random = Unity.Mathematics.Random;
 
 public class Maze_Generator : MonoBehaviour
 {
-    [SerializeField] private Vector2Int mazeSize;
-    [SerializeField] private float cellSize;
-
-    private void Start()
-    {
-        MazeCell[] mazeCells = GenerateMaze(mazeSize, cellSize, 42);
-        DrawMaze(mazeCells);
-    }
 
     public MazeCell[] GenerateMaze(Vector2Int mazeSize, float cellSize, int randomSeed)
     {
@@ -32,6 +24,7 @@ public class Maze_Generator : MonoBehaviour
         var starttime = Time.realtimeSinceStartup;
         generateMaze.Run();
         Debug.Log(Time.realtimeSinceStartup - starttime);
+
         MazeCell[] mazeCells = generateMaze.cells.ToArray();
 
         // Dispose Native Arrays
@@ -40,18 +33,7 @@ public class Maze_Generator : MonoBehaviour
         return mazeCells;
     }
 
-    public void DrawMaze(MazeCell[] mazeCells)
-    {
-        foreach (var cell in mazeCells)
-        {
-            //Debug.Log(cell.wallTop + " " + cell.wallLeft + " " + cell.wallBottom + " " + cell.wallRight);
 
-            if (cell.wallTop) Debug.DrawLine(GetWorldPosition(cell.x, cell.y + 1), GetWorldPosition(cell.x + 1, cell.y + 1), Color.black, 100);
-            if (cell.wallLeft) Debug.DrawLine(GetWorldPosition(cell.x, cell.y), GetWorldPosition(cell.x, cell.y + 1), Color.black, 100);
-            if (cell.wallBottom) Debug.DrawLine(GetWorldPosition(cell.x, cell.y), GetWorldPosition(cell.x + 1, cell.y), Color.black, 100);
-            if (cell.wallRight) Debug.DrawLine(GetWorldPosition(cell.x + 1, cell.y), GetWorldPosition(cell.x + 1, cell.y + 1), Color.black, 100);
-        }
-    }
 
     [BurstCompile]
     public struct GenerateMazeJob : IJob
@@ -187,14 +169,9 @@ public class Maze_Generator : MonoBehaviour
         }
     }
 
-    #region Helper functions
-    public Vector2 GetWorldPosition(int gridPositionX, int gridPositionY)
-    => new Vector2(-gridPositionX, -gridPositionY) * cellSize + CalculateOrigin();
 
-    public Vector2 CalculateOrigin()
-        => new Vector2(mazeSize.x, mazeSize.y) / 2f * cellSize;
-    #endregion
 
+}
     public struct MazeCell
     {
         public int x, y;
@@ -207,4 +184,3 @@ public class Maze_Generator : MonoBehaviour
 
         public bool isVisited;
     }
-}

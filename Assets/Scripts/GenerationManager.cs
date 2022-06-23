@@ -3,6 +3,7 @@ using UnityEngine;
 public class GenerationManager : MonoBehaviour
 {
     [SerializeField] private InformationCollector informationCollector;
+    [SerializeField] private GameObject WallPrefab;
     
     private const float CELL_SIZE = .5f;
 
@@ -25,16 +26,30 @@ public class GenerationManager : MonoBehaviour
 
     public void DrawMaze(MazeCell[] mazeCells)
     {
-        foreach (var cell in mazeCells)
+        MazeCell[] WallCleanedMazeCells = WallCleanUp(mazeCells);
+        foreach (var cell in WallCleanedMazeCells)
         {
-            //Debug.Log(cell.wallTop + " " + cell.wallLeft + " " + cell.wallBottom + " " + cell.wallRight);
-
-            if (cell.wallTop) Debug.DrawLine(GetWorldPosition(cell.x, cell.y + 1), GetWorldPosition(cell.x + 1, cell.y + 1), Color.black, 100);
-            if (cell.wallLeft) Debug.DrawLine(GetWorldPosition(cell.x, cell.y), GetWorldPosition(cell.x, cell.y + 1), Color.black, 100);
-            if (cell.wallBottom) Debug.DrawLine(GetWorldPosition(cell.x, cell.y), GetWorldPosition(cell.x + 1, cell.y), Color.black, 100);
+            if (cell.wallTop)   
+                Debug.DrawLine(GetWorldPosition(cell.x, cell.y + 1), GetWorldPosition(cell.x + 1, cell.y + 1), Color.black, 100);
+            if (cell.wallLeft)  Debug.DrawLine(GetWorldPosition(cell.x, cell.y), GetWorldPosition(cell.x, cell.y + 1), Color.black, 100);
+            if (cell.wallBottom)Debug.DrawLine(GetWorldPosition(cell.x, cell.y), GetWorldPosition(cell.x + 1, cell.y), Color.black, 100);
             if (cell.wallRight) Debug.DrawLine(GetWorldPosition(cell.x + 1, cell.y), GetWorldPosition(cell.x + 1, cell.y + 1), Color.black, 100);
         }
     }
+
+    private MazeCell[] WallCleanUp(MazeCell[] mazeCells)
+    {
+        for (int i = 0; i < mazeCells.Length; i++)
+        {
+            MazeCell cell = mazeCells[i];
+            if (cell.wallLeft && cell.neighbourLeft != -1)  cell.wallLeft = false;
+            if (cell.wallTop && cell.neighbourTop != -1)    cell.wallTop = false;
+            mazeCells[i] = cell;
+        }
+        return mazeCells;
+    }
+
+
 
     #region Helper functions
     public Vector2 GetWorldPosition(int gridPositionX, int gridPositionY)

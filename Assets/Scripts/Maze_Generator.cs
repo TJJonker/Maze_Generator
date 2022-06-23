@@ -63,6 +63,11 @@ public class Maze_Generator : MonoBehaviour
                     cell.wallBottom = true;
                     cell.wallRight  = true;
 
+                    cell.neighbourTop       = CalculateIndex(cell.x, cell.y + 1);
+                    cell.neighbourLeft      = CalculateIndex(cell.x - 1, cell.y);
+                    cell.neighbourBottom    = CalculateIndex(cell.x, cell.y - 1);
+                    cell.neighbourRight     = CalculateIndex(cell.x + 1, cell.y);
+
                     cell.isVisited  = false;
 
                     cells[cell.index] = cell;
@@ -101,10 +106,10 @@ public class Maze_Generator : MonoBehaviour
             MazeCell currentCell = cells[currentCellIndex];
 
             NativeArray<int> neighbourIndex = new NativeArray<int>(4, Allocator.Temp);
-            neighbourIndex[0]   = IsNeighbourUsable(CalculateIndex(currentCell.x, currentCell.y + 1));
-            neighbourIndex[1]   = IsNeighbourUsable(CalculateIndex(currentCell.x - 1, currentCell.y));
-            neighbourIndex[2]   = IsNeighbourUsable(CalculateIndex(currentCell.x, currentCell.y - 1));
-            neighbourIndex[3]   = IsNeighbourUsable(CalculateIndex(currentCell.x + 1, currentCell.y));
+            neighbourIndex[0]   = IsNeighbourUsable(currentCell.neighbourTop);
+            neighbourIndex[1]   = IsNeighbourUsable(currentCell.neighbourLeft);
+            neighbourIndex[2]   = IsNeighbourUsable(currentCell.neighbourBottom);
+            neighbourIndex[3]   = IsNeighbourUsable(currentCell.neighbourRight);
 
             NativeList<int> usableNeightbourIndexes = new NativeList<int>(Allocator.Temp);
             foreach (int cellIndex in neighbourIndex)
@@ -172,15 +177,20 @@ public class Maze_Generator : MonoBehaviour
 
 
 }
-    public struct MazeCell
-    {
-        public int x, y;
-        public int index;
+public struct MazeCell
+{
+    public int x, y;
+    public int index;
 
-        public bool wallTop;
-        public bool wallLeft;
-        public bool wallBottom;
-        public bool wallRight;
+    public bool wallTop;
+    public bool wallLeft;
+    public bool wallBottom;
+    public bool wallRight;
 
-        public bool isVisited;
-    }
+    public int neighbourTop;
+    public int neighbourLeft;
+    public int neighbourBottom;
+    public int neighbourRight;
+
+    public bool isVisited;
+}

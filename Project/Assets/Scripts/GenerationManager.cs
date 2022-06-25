@@ -31,6 +31,7 @@ public class GenerationManager : MonoBehaviour
         mazeSize = new Vector2Int(width, height);        
 
         MazeCell[] mazeCells = mazeGenerator.GenerateMaze(mazeSize, CELL_SIZE, randomSeed);
+
         var startTime = Time.realtimeSinceStartup;
         DrawMaze(mazeCells);
         Debug.Log("Time to draw maze: " + (Time.realtimeSinceStartup - startTime));
@@ -47,26 +48,28 @@ public class GenerationManager : MonoBehaviour
             var cell = WallCleanedMazeCells[i];
             int index = i * 4;
 
-            if (cell.wallTop)   CreateWall(GetWorldPosition(cell.x, cell.y + 1), GetWorldPosition(cell.x + 1, cell.y + 1), index, ref vertices, ref uvs, ref triangles);
-            if (cell.wallLeft)  CreateWall(GetWorldPosition(cell.x, cell.y), GetWorldPosition(cell.x, cell.y + 1), index + 1, ref vertices, ref uvs, ref triangles);
-            if (cell.wallBottom)CreateWall(GetWorldPosition(cell.x, cell.y), GetWorldPosition(cell.x + 1, cell.y), index + 2, ref vertices, ref uvs, ref triangles);
-            if (cell.wallRight) CreateWall(GetWorldPosition(cell.x + 1, cell.y), GetWorldPosition(cell.x + 1, cell.y + 1), index + 3, ref vertices, ref uvs, ref triangles);
+            if (cell.wallTop)   CreateWall(GetWorldPosition(cell.x, cell.y + 1),GetWorldPosition(cell.x + 1, cell.y + 1), index, ref vertices, ref uvs, ref triangles);
+            if (cell.wallLeft)  CreateWall(GetWorldPosition(cell.x, cell.y),    GetWorldPosition(cell.x, cell.y + 1), index + 1, ref vertices, ref uvs, ref triangles);
+            if (cell.wallBottom)CreateWall(GetWorldPosition(cell.x, cell.y),    GetWorldPosition(cell.x + 1, cell.y), index + 2, ref vertices, ref uvs, ref triangles);
+            if (cell.wallRight) CreateWall(GetWorldPosition(cell.x + 1, cell.y),GetWorldPosition(cell.x + 1, cell.y + 1), index + 3, ref vertices, ref uvs, ref triangles);
             //break;
         }
 
         MeshUtils.ApplyToMesh(mesh, vertices, uvs, triangles);
         meshFilter.mesh = mesh;
 
-        
+        #region Debug
+        /*
         foreach (var cell in WallCleanedMazeCells)
         {
-            if (cell.wallTop)   Debug.DrawLine(GetWorldPosition(cell.x, cell.y + 1), GetWorldPosition(cell.x + 1, cell.y + 1), Color.black, 100);
-            if (cell.wallLeft)  Debug.DrawLine(GetWorldPosition(cell.x, cell.y), GetWorldPosition(cell.x, cell.y + 1), Color.black, 100);
-            if (cell.wallBottom)Debug.DrawLine(GetWorldPosition(cell.x, cell.y), GetWorldPosition(cell.x + 1, cell.y), Color.black, 100);
-            if (cell.wallRight) Debug.DrawLine(GetWorldPosition(cell.x + 1, cell.y), GetWorldPosition(cell.x + 1, cell.y + 1), Color.black, 100);
+            if (cell.wallTop)   Debug.DrawLine(GetWorldPosition(cell.x, cell.y + 1),GetWorldPosition(cell.x + 1, cell.y + 1), Color.black, 100);
+            if (cell.wallLeft)  Debug.DrawLine(GetWorldPosition(cell.x, cell.y),    GetWorldPosition(cell.x, cell.y + 1), Color.black, 100);
+            if (cell.wallBottom)Debug.DrawLine(GetWorldPosition(cell.x, cell.y),    GetWorldPosition(cell.x + 1, cell.y), Color.black, 100);
+            if (cell.wallRight) Debug.DrawLine(GetWorldPosition(cell.x + 1, cell.y),GetWorldPosition(cell.x + 1, cell.y + 1), Color.black, 100);
             //break;   
         }
-        
+        */
+        #endregion
     }
 
 
@@ -80,7 +83,6 @@ public class GenerationManager : MonoBehaviour
         pointB -= new Vector2(.025f, .025f);
 
         MeshUtils.AddToMeshArray(ref vertices, ref uvs, ref triangles, index, pointA + shapeDirection * .5f, 0f, pointB - pointA, Vector2.zero, Vector2.one);
-        //MeshUtils.AddToMesh(ref mesh, pointA + shapeDirection * .5f, 0f, pointB - pointA, Vector2.zero, Vector2.one);
     }
 
     private MazeCell[] WallCleanUp(MazeCell[] mazeCells)

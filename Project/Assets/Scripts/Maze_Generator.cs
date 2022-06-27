@@ -177,6 +177,7 @@ public class Maze_Generator : MonoBehaviour
 
 
 }
+
 public struct MazeCell
 {
     public int x, y;
@@ -187,10 +188,32 @@ public struct MazeCell
     public bool wallBottom;
     public bool wallRight;
 
+    private NativeArray<bool> walls;
+    public NativeArray<bool> Walls
+    {
+        get
+        {
+            if (walls.IsCreated == false)
+                walls = new NativeArray<bool>(4, Allocator.Temp);
+            return walls;
+        }
+    }
+
     public int neighbourTop;
     public int neighbourLeft;
     public int neighbourBottom;
     public int neighbourRight;
+
+    private NativeArray<int> neighbours;
+    public NativeArray<int> Neighbours
+    {
+        get
+        {
+            if (neighbours.IsCreated == false)
+                neighbours = new NativeArray<int>(4, Allocator.Temp);
+            return neighbours;
+        }
+    }
 
     public bool isVisited;
 }

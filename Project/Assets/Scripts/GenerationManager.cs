@@ -83,6 +83,7 @@ public class GenerationManager : MonoBehaviour
             {
                 // Apply current arrays to the mesh
                 MeshUtils.ApplyToMesh(mesh, vertices, uvs, triangles);
+                mesh.RecalculateBounds();
                 // Apply mesh to meshObject
                 poolObject.GetComponent<MeshFilter>().mesh = mesh;
                 // Create new mesh

@@ -16,9 +16,12 @@ public class InformationCollector : MonoBehaviour
 
     public void GetInformation(out int width, out int height, out int randomSeed)
     {
-        width = int.Parse(inputFieldWidth.text);
-        height = int.Parse(inputFieldHeight.text);
+        width = GetWidthInput();
+        height = GetHeightInput();
         randomSeed = toggleRandomSeed.isOn ? Mathf.FloorToInt(Random.Range(0, MAX_RANDOM_SEED)) : int.Parse(inputFieldSeed.text);
         inputFieldSeed.text = randomSeed.ToString();
     }
+
+    public int GetWidthInput() => int.Parse(inputFieldWidth.text);
+    public int GetHeightInput() => int.Parse(inputFieldHeight.text);
 }

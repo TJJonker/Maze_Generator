@@ -9,7 +9,7 @@ public class GenerationManager : MonoBehaviour
     [SerializeField] private MeshFilter meshFilter;
     
     private const float CELL_SIZE = .5f;
-    private const int MAX_QUAD_AMOUNT_PER_MESH = 4100;
+    private const int MAX_QUAD_AMOUNT_PER_MESH = 4000;
 
     private Maze_Generator mazeGenerator;
     private Vector2Int mazeSize;
@@ -23,7 +23,7 @@ public class GenerationManager : MonoBehaviour
     private void Awake()
     {
         mesh = new Mesh();
-
+        // Create the pool
         pool = new ObjectPool<GameObject>(
             () => new GameObject("MeshObject", typeof(MeshFilter), typeof(MeshRenderer)),
             (shape) => shape.gameObject.SetActive(true),
@@ -46,43 +46,52 @@ public class GenerationManager : MonoBehaviour
         informationCollector.GetInformation(out width, out height, out randomSeed);
         mazeSize = new Vector2Int(width, height);
 
-        var startTimer = Time.realtimeSinceStartup;
+        //var startTimer = Time.realtimeSinceStartup;
         MazeCell[] mazeCells = mazeGenerator.GenerateMaze(mazeSize, CELL_SIZE, randomSeed);
-        Debug.Log("Time to Generate maze: " + (Time.realtimeSinceStartup - startTimer));
+        //Debug.Log("Time to Generate maze: " + (Time.realtimeSinceStartup - startTimer));
 
-        var startTime = Time.realtimeSinceStartup;
+        //var startTime = Time.realtimeSinceStartup;
         DrawMaze(mazeCells);
-        Debug.Log("Time to draw maze: " + (Time.realtimeSinceStartup - startTime));
+        //Debug.Log("Time to draw maze: " + (Time.realtimeSinceStartup - startTime));
     }
 
     public void DrawMaze(MazeCell[] mazeCells)
     {
-        foreach(var obj in UsedMeshGameObjects) pool.Release(obj);
+        // Empty the used object list and release all pool items
+        foreach (var obj in UsedMeshGameObjects) pool.Release(obj);
         UsedMeshGameObjects.Clear();
 
+        // Clean up the maze (In case of double walls)
         MazeCell[] WallCleanedMazeCells = WallCleanUp(mazeCells);
 
-        //Debug.Log(WallCleanedMazeCells.Length);
-        //Debug.Log(GetAmountOfWalls(WallCleanedMazeCells));
-
+        // Get the first object from the pool
         pool.Get(out GameObject poolObject);
         UsedMeshGameObjects.Add(poolObject);
 
         int quadCount = 0;
         int nextMeshIndex = 0;
+        
         MeshUtils.CreateEmptyMeshArrays(100000, out Vector3[] vertices, out Vector2[] uvs, out int[] triangles);
 
+        //var startTime = Time.realtimeSinceStartup;
         //foreach(var cell in WallCleanedMazeCells)
         for (int i = 0; i < WallCleanedMazeCells.Length; i++)
         {
+
             if(quadCount > MAX_QUAD_AMOUNT_PER_MESH - 3)
             {
+                // Apply current arrays to the mesh
                 MeshUtils.ApplyToMesh(mesh, vertices, uvs, triangles);
-                quadCount = 0;
+                // Apply mesh to meshObject
                 poolObject.GetComponent<MeshFilter>().mesh = mesh;
+                // Create new mesh
                 mesh = new Mesh();
+                // Get new object from the pool
                 pool.Get(out poolObject);
                 UsedMeshGameObjects.Add(poolObject);
+                
+
+                quadCount = 0;
                 nextMeshIndex = i * 4;
                 MeshUtils.CreateEmptyMeshArrays(100000, out vertices, out uvs, out triangles);
             }
@@ -115,6 +124,7 @@ public class GenerationManager : MonoBehaviour
             }
             //break;
         }
+        //Debug.Log("Time to Create big array: " + (Time.realtimeSinceStartup - startTime));
         
 
         MeshUtils.ApplyToMesh(mesh, vertices, uvs, triangles);

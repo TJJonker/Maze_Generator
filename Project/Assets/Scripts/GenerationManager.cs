@@ -9,6 +9,7 @@ public class GenerationManager : MonoBehaviour
     [SerializeField] private MeshFilter meshFilter;
     
     private const float CELL_SIZE = .5f;
+    private const float WALL_WIDTH = 0.05f;
     private const int MAX_QUAD_AMOUNT_PER_MESH = 4000;
 
     private Maze_Generator mazeGenerator;
@@ -122,9 +123,7 @@ public class GenerationManager : MonoBehaviour
                 CreateWall(GetWorldPosition(cell.x + 1, cell.y), GetWorldPosition(cell.x + 1, cell.y + 1), index + 3, ref vertices, ref uvs, ref triangles);
                 quadCount++;
             }
-            //break;
         }
-        //Debug.Log("Time to Create big array: " + (Time.realtimeSinceStartup - startTime));
         
 
         MeshUtils.ApplyToMesh(mesh, vertices, uvs, triangles);
@@ -147,46 +146,51 @@ public class GenerationManager : MonoBehaviour
 
 
     #region Helper functions
+    /// <summary>
+    ///     Creates a wall between to points in the given mesh arrays 
+    /// </summary>
+    /// <param name="pointA"> First wall point </param>
+    /// <param name="pointB"> Second wall point</param>
+    /// <param name="index"> Place in the array </param>
+    /// <param name="vertices"> Array of vertices to add the information to </param>
+    /// <param name="uvs"> Array of uvs to add the information to </param>
+    /// <param name="triangles"> Array of triangles to add the information to </param>
     private void CreateWall(Vector2 pointA, Vector2 pointB, int index, ref Vector3[] vertices, ref Vector2[] uvs, ref int[] triangles)
     {
+        // Determine the direction vector between the points
         var shapeDirection = pointB - pointA;
-
-        pointA += new Vector2(.025f, .025f);
-        pointB -= new Vector2(.025f, .025f);
-
+        // Adding a little width to the wall
+        pointA += new Vector2(WALL_WIDTH / 2f, WALL_WIDTH / 2f);
+        pointB -= new Vector2(WALL_WIDTH / 2f, WALL_WIDTH / 2f);
+        // Adding the information to the arrays
         MeshUtils.AddToMeshArray(ref vertices, ref uvs, ref triangles, index, pointA + shapeDirection * .5f, 0f, pointB - pointA, Vector2.zero, Vector2.one);
     }
 
+    /// <summary>
+    ///     Calls the CleanUpWalls() function in all the MazeCell cells
+    /// </summary>
+    /// <param name="mazeCells"> Array of cells </param>
+    /// <returns> Returns a cleaned up version of the array </returns>
     private MazeCell[] WallCleanUp(MazeCell[] mazeCells)
     {
         for (int i = 0; i < mazeCells.Length; i++)
-        {
-            MazeCell cell = mazeCells[i];
-            if (cell.wallLeft && cell.neighbourLeft != -1) cell.wallLeft = false;
-            if (cell.wallTop && cell.neighbourTop != -1) cell.wallTop = false;
-            mazeCells[i] = cell;
-        }
+            mazeCells[i].CleanUpWalls();
         return mazeCells;
     }
 
-    private int GetAmountOfWalls(MazeCell[] mazeCells)
-    {
-        int amountOfWalls = 0;  
-        foreach(MazeCell cell in mazeCells)
-        {
-            if(cell.wallTop) amountOfWalls++;
-            if(cell.wallLeft) amountOfWalls++;
-            if(cell.wallBottom) amountOfWalls++;
-            if(cell.wallRight) amountOfWalls++;
-        }
-        return amountOfWalls;
-    }
-
+    /// <summary>
+    ///     Returns the world position of a given position on the grid
+    /// </summary>
+    /// <param name="gridPositionX"> X position on the grid </param>
+    /// <param name="gridPositionY"> Y position on the grid </param>
+    /// <returns> returns the world position </returns>
     public Vector2 GetWorldPosition(int gridPositionX, int gridPositionY)
-    {
-        return new Vector2(-gridPositionX, -gridPositionY) * CELL_SIZE + CalculateOrigin();
-    }
+        => new Vector2(-gridPositionX, -gridPositionY) * CELL_SIZE + CalculateOrigin();
 
+    /// <summary>
+    ///     Calculates the origin point of the grid
+    /// </summary>
+    /// <returns> Returns the origin of the grid </returns>
     public Vector2 CalculateOrigin()
         => new Vector2(mazeSize.x, mazeSize.y) / 2f * CELL_SIZE;
     #endregion

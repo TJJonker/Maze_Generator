@@ -116,6 +116,118 @@ namespace MazeGenerator.Input
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Gameplay"",
+            ""id"": ""22f42b9b-8a92-4ea3-9d15-bf26b1dbe33b"",
+            ""actions"": [
+                {
+                    ""name"": ""Movement"",
+                    ""type"": ""Value"",
+                    ""id"": ""3dd0b34a-a8d2-4e09-86f1-fa33b0115730"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Camera Zoom"",
+                    ""type"": ""Value"",
+                    ""id"": ""4a1e46ca-0488-4095-a6e5-fa07a95b79aa"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Quit"",
+                    ""type"": ""Button"",
+                    ""id"": ""0f5e89af-6c0e-4130-9f24-2ba6edaae26f"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""b7d482a5-b48e-4ff7-b45e-84ba151e89b5"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Movement"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""f6baa0cc-75f9-4677-a1ed-abd26515779f"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Movement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""eafdea41-3457-4758-8c5f-f1ffca249dd5"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Movement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""520c093d-3c6c-4f66-8305-70e05d3d4cf1"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Movement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""c5cfd0ac-8fc2-44a2-a406-e0be03f9ba31"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Movement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c68401b1-8777-4c76-8c26-bc5ad8e8b3b2"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Quit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3210a3c1-4ea1-4ab0-a9f0-1cbb8ce9f52d"",
+                    ""path"": ""<Mouse>/scroll/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Camera Zoom"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -124,6 +236,11 @@ namespace MazeGenerator.Input
             m_Generating = asset.FindActionMap("Generating", throwIfNotFound: true);
             m_Generating_CameraMovement = m_Generating.FindAction("Camera Movement", throwIfNotFound: true);
             m_Generating_CameraZoom = m_Generating.FindAction("Camera Zoom", throwIfNotFound: true);
+            // Gameplay
+            m_Gameplay = asset.FindActionMap("Gameplay", throwIfNotFound: true);
+            m_Gameplay_Movement = m_Gameplay.FindAction("Movement", throwIfNotFound: true);
+            m_Gameplay_CameraZoom = m_Gameplay.FindAction("Camera Zoom", throwIfNotFound: true);
+            m_Gameplay_Quit = m_Gameplay.FindAction("Quit", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -220,10 +337,65 @@ namespace MazeGenerator.Input
             }
         }
         public GeneratingActions @Generating => new GeneratingActions(this);
+
+        // Gameplay
+        private readonly InputActionMap m_Gameplay;
+        private IGameplayActions m_GameplayActionsCallbackInterface;
+        private readonly InputAction m_Gameplay_Movement;
+        private readonly InputAction m_Gameplay_CameraZoom;
+        private readonly InputAction m_Gameplay_Quit;
+        public struct GameplayActions
+        {
+            private @PlayerInputActionMap m_Wrapper;
+            public GameplayActions(@PlayerInputActionMap wrapper) { m_Wrapper = wrapper; }
+            public InputAction @Movement => m_Wrapper.m_Gameplay_Movement;
+            public InputAction @CameraZoom => m_Wrapper.m_Gameplay_CameraZoom;
+            public InputAction @Quit => m_Wrapper.m_Gameplay_Quit;
+            public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
+            public void Enable() { Get().Enable(); }
+            public void Disable() { Get().Disable(); }
+            public bool enabled => Get().enabled;
+            public static implicit operator InputActionMap(GameplayActions set) { return set.Get(); }
+            public void SetCallbacks(IGameplayActions instance)
+            {
+                if (m_Wrapper.m_GameplayActionsCallbackInterface != null)
+                {
+                    @Movement.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnMovement;
+                    @Movement.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnMovement;
+                    @Movement.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnMovement;
+                    @CameraZoom.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnCameraZoom;
+                    @CameraZoom.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnCameraZoom;
+                    @CameraZoom.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnCameraZoom;
+                    @Quit.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnQuit;
+                    @Quit.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnQuit;
+                    @Quit.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnQuit;
+                }
+                m_Wrapper.m_GameplayActionsCallbackInterface = instance;
+                if (instance != null)
+                {
+                    @Movement.started += instance.OnMovement;
+                    @Movement.performed += instance.OnMovement;
+                    @Movement.canceled += instance.OnMovement;
+                    @CameraZoom.started += instance.OnCameraZoom;
+                    @CameraZoom.performed += instance.OnCameraZoom;
+                    @CameraZoom.canceled += instance.OnCameraZoom;
+                    @Quit.started += instance.OnQuit;
+                    @Quit.performed += instance.OnQuit;
+                    @Quit.canceled += instance.OnQuit;
+                }
+            }
+        }
+        public GameplayActions @Gameplay => new GameplayActions(this);
         public interface IGeneratingActions
         {
             void OnCameraMovement(InputAction.CallbackContext context);
             void OnCameraZoom(InputAction.CallbackContext context);
+        }
+        public interface IGameplayActions
+        {
+            void OnMovement(InputAction.CallbackContext context);
+            void OnCameraZoom(InputAction.CallbackContext context);
+            void OnQuit(InputAction.CallbackContext context);
         }
     }
 }

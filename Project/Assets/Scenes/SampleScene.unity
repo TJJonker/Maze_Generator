@@ -1220,9 +1220,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 877814745}
-        m_TargetAssemblyTypeName: GenerationManager, Assembly-CSharp
-        m_MethodName: CreateMaze
+      - m_Target: {fileID: 877814746}
+        m_TargetAssemblyTypeName: Maze_Gameplay, Assembly-CSharp
+        m_MethodName: TryStartGamePlay
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1907,7 +1907,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.9607843, g: 0.9647059, b: 0.98039216, a: 0}
+  m_BackGroundColor: {r: 0.4811321, g: 0.4811321, b: 0.4811321, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -2516,6 +2516,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cinemachineVirtualCamera: {fileID: 48675470}
+  minOrthographicSize: 5
+  maxOrthographicSize: 30
 --- !u!1 &877814741
 GameObject:
   m_ObjectHideFlags: 0
@@ -2528,6 +2530,8 @@ GameObject:
   - component: {fileID: 877814742}
   - component: {fileID: 877814745}
   - component: {fileID: 877814744}
+  - component: {fileID: 877814747}
+  - component: {fileID: 877814746}
   m_Layer: 0
   m_Name: === Essentials ===
   m_TagString: Untagged
@@ -2587,7 +2591,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   informationCollector: {fileID: 1275731888}
-  meshFilter: {fileID: 885961960}
+--- !u!114 &877814746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 877814741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 782cecd8410ef4347848bd2df1f1eaca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerPrefab: {fileID: 3522649667004329775, guid: d61428e347bcfb14d8c2620f99b1f104, type: 3}
+  cameraTarget: {fileID: 519420032}
+--- !u!114 &877814747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 877814741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 295a8c59e5599574aba21ff078c9b391, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &885961958
 GameObject:
   m_ObjectHideFlags: 0

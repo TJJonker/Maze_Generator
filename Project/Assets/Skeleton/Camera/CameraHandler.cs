@@ -6,6 +6,7 @@ public class CameraHandler : MonoBehaviour
 {
 
     [SerializeField] private CinemachineVirtualCamera cinemachineVirtualCamera;
+    [SerializeField] private float minOrthographicSize, maxOrthographicSize;
 
     private PlayerInputActionMap playerInputActionMap;
 
@@ -30,9 +31,8 @@ public class CameraHandler : MonoBehaviour
     {
         float zoomAmount = 2f / 120;
         targetOrthographicSize -= playerInputActionMap.Generating.CameraZoom.ReadValue<float>() * zoomAmount;
+        targetOrthographicSize -= playerInputActionMap.Gameplay.CameraZoom.ReadValue<float>() * zoomAmount;
 
-        float minOrthographicSize = 5;
-        float maxOrthographicSize = 30;
         targetOrthographicSize = Mathf.Clamp(targetOrthographicSize, minOrthographicSize, maxOrthographicSize);
 
         float zoomSpeed = 5f;

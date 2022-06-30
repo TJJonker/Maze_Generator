@@ -46,6 +46,15 @@ namespace MazeGenerator.Input
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Mouse"",
+                    ""type"": ""Value"",
+                    ""id"": ""b4d430ef-aa7e-4f89-a77f-cf80e55b02c1"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -112,6 +121,17 @@ namespace MazeGenerator.Input
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Camera Zoom"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a6441607-c84e-44c0-83d6-6def9d98b815"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Mouse"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -236,6 +256,7 @@ namespace MazeGenerator.Input
             m_Generating = asset.FindActionMap("Generating", throwIfNotFound: true);
             m_Generating_CameraMovement = m_Generating.FindAction("Camera Movement", throwIfNotFound: true);
             m_Generating_CameraZoom = m_Generating.FindAction("Camera Zoom", throwIfNotFound: true);
+            m_Generating_Mouse = m_Generating.FindAction("Mouse", throwIfNotFound: true);
             // Gameplay
             m_Gameplay = asset.FindActionMap("Gameplay", throwIfNotFound: true);
             m_Gameplay_Movement = m_Gameplay.FindAction("Movement", throwIfNotFound: true);
@@ -302,12 +323,14 @@ namespace MazeGenerator.Input
         private IGeneratingActions m_GeneratingActionsCallbackInterface;
         private readonly InputAction m_Generating_CameraMovement;
         private readonly InputAction m_Generating_CameraZoom;
+        private readonly InputAction m_Generating_Mouse;
         public struct GeneratingActions
         {
             private @PlayerInputActionMap m_Wrapper;
             public GeneratingActions(@PlayerInputActionMap wrapper) { m_Wrapper = wrapper; }
             public InputAction @CameraMovement => m_Wrapper.m_Generating_CameraMovement;
             public InputAction @CameraZoom => m_Wrapper.m_Generating_CameraZoom;
+            public InputAction @Mouse => m_Wrapper.m_Generating_Mouse;
             public InputActionMap Get() { return m_Wrapper.m_Generating; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -323,6 +346,9 @@ namespace MazeGenerator.Input
                     @CameraZoom.started -= m_Wrapper.m_GeneratingActionsCallbackInterface.OnCameraZoom;
                     @CameraZoom.performed -= m_Wrapper.m_GeneratingActionsCallbackInterface.OnCameraZoom;
                     @CameraZoom.canceled -= m_Wrapper.m_GeneratingActionsCallbackInterface.OnCameraZoom;
+                    @Mouse.started -= m_Wrapper.m_GeneratingActionsCallbackInterface.OnMouse;
+                    @Mouse.performed -= m_Wrapper.m_GeneratingActionsCallbackInterface.OnMouse;
+                    @Mouse.canceled -= m_Wrapper.m_GeneratingActionsCallbackInterface.OnMouse;
                 }
                 m_Wrapper.m_GeneratingActionsCallbackInterface = instance;
                 if (instance != null)
@@ -333,6 +359,9 @@ namespace MazeGenerator.Input
                     @CameraZoom.started += instance.OnCameraZoom;
                     @CameraZoom.performed += instance.OnCameraZoom;
                     @CameraZoom.canceled += instance.OnCameraZoom;
+                    @Mouse.started += instance.OnMouse;
+                    @Mouse.performed += instance.OnMouse;
+                    @Mouse.canceled += instance.OnMouse;
                 }
             }
         }
@@ -390,6 +419,7 @@ namespace MazeGenerator.Input
         {
             void OnCameraMovement(InputAction.CallbackContext context);
             void OnCameraZoom(InputAction.CallbackContext context);
+            void OnMouse(InputAction.CallbackContext context);
         }
         public interface IGameplayActions
         {

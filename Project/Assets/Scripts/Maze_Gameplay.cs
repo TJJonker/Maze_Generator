@@ -54,12 +54,14 @@ public class Maze_Gameplay : MonoBehaviour
         var startTime = Time.realtimeSinceStartup;
         var desiredPosition = GetPosition(desiredCellIndex);
         var originalPlayerPosition = playerObject.transform.position;
+        var t = 0f;
 
         FunctionUpdater.Create(() =>
         {
-            playerObject.transform.position = Vector3.Slerp(originalPlayerPosition, desiredPosition, Time.deltaTime * progressionSteps);
+            t += Time.deltaTime * progressionSteps;
+            playerObject.transform.position = Vector3.Slerp(originalPlayerPosition, desiredPosition, t);
 
-            if(Time.realtimeSinceStartup - startTime < movementTime)
+            if(Time.realtimeSinceStartup - startTime > movementTime)
             {
                 playerObject.transform.position = desiredPosition;
                 canMove = true;

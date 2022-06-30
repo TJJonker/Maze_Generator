@@ -2604,7 +2604,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 3522649667004329775, guid: d61428e347bcfb14d8c2620f99b1f104, type: 3}
-  cameraTarget: {fileID: 519420032}
+  cameraTarget: {fileID: 48675470}
+  movementTime: 1
 --- !u!114 &877814747
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4593,7 +4594,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 2210, y: 0}
+  m_AnchoredPosition: {x: 2154.6, y: 0}
   m_SizeDelta: {x: 405.4404, y: 922.0578}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &1472457868

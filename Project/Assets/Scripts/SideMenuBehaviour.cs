@@ -37,4 +37,6 @@ public class SideMenuBehaviour : MonoBehaviour
             return true;
         });
     }
+
+    public bool IsIn() => position != 1;
 }

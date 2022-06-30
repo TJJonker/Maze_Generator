@@ -320,7 +320,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.7777778, y: 1}
+    m_SensorSize: {x: 2.1653333, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -1215,7 +1215,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 387997418}
   m_OnClick:
     m_PersistentCalls:
@@ -1223,6 +1223,30 @@ MonoBehaviour:
       - m_Target: {fileID: 877814746}
         m_TargetAssemblyTypeName: Maze_Gameplay, Assembly-CSharp
         m_MethodName: TryStartGamePlay
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 424332550}
+        m_TargetAssemblyTypeName: InvokeButtonEvent, Assembly-CSharp
+        m_MethodName: Close
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1233782620}
+        m_TargetAssemblyTypeName: InvokeButtonEvent, Assembly-CSharp
+        m_MethodName: Close
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1418,6 +1442,7 @@ GameObject:
   - component: {fileID: 424332548}
   - component: {fileID: 424332547}
   - component: {fileID: 424332546}
+  - component: {fileID: 424332550}
   m_Layer: 5
   m_Name: CloseButton
   m_TagString: Untagged
@@ -1566,6 +1591,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 424332544}
   m_CullTransparentMesh: 1
+--- !u!114 &424332550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 424332544}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 145e79a583e9e43418f6b054ee948813, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  menu: {fileID: 1472457868}
 --- !u!1 &460238943
 GameObject:
   m_ObjectHideFlags: 0
@@ -2604,8 +2642,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 3522649667004329775, guid: d61428e347bcfb14d8c2620f99b1f104, type: 3}
+  flagPrefab: {fileID: 3522649667004329775, guid: 9ea6c0d031e96d948af22790ab38af23, type: 3}
   cameraTarget: {fileID: 48675470}
   movementTime: 0.1
+  action:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1233782620}
+        m_TargetAssemblyTypeName: InvokeButtonEvent, Assembly-CSharp
+        m_MethodName: Open
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 424332550}
+        m_TargetAssemblyTypeName: InvokeButtonEvent, Assembly-CSharp
+        m_MethodName: Open
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &877814747
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2618,6 +2684,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 295a8c59e5599574aba21ff078c9b391, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  meshMaterial: {fileID: 2100000, guid: b4ae9b05fb54533498f4c15d3c52557a, type: 2}
 --- !u!1 &885961958
 GameObject:
   m_ObjectHideFlags: 0
@@ -3462,6 +3529,7 @@ GameObject:
   - component: {fileID: 1233782617}
   - component: {fileID: 1233782616}
   - component: {fileID: 1233782619}
+  - component: {fileID: 1233782620}
   m_Layer: 5
   m_Name: CloseButton
   m_TagString: Untagged
@@ -3610,6 +3678,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   initialText: <
   changedText: '>'
+--- !u!114 &1233782620
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1233782614}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 145e79a583e9e43418f6b054ee948813, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  menu: {fileID: 318622206}
 --- !u!1 &1264495614
 GameObject:
   m_ObjectHideFlags: 0
@@ -5081,6 +5162,18 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 387997417}
+        m_TargetAssemblyTypeName: UnityEngine.UI.Selectable, UnityEngine.UI
+        m_MethodName: set_interactable
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
         m_CallState: 2
 --- !u!114 &1787578940
 MonoBehaviour:

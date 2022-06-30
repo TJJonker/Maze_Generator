@@ -3,14 +3,21 @@ using UnityEngine.InputSystem;
 using Cinemachine;
 using Jonko.Timers;
 using Unity.Mathematics;
+using UnityEngine.Events;
 
 public class Maze_Gameplay : MonoBehaviour
 {
     [SerializeField] private GameObject playerPrefab;
+    [SerializeField] private GameObject flagPrefab;
     [SerializeField] private CinemachineVirtualCamera cameraTarget;
     [SerializeField] private float movementTime;
 
+    [SerializeField] private UnityEvent action;
+
+    private Transform previousCameraTarget;
+
     private GameObject playerObject;
+    private GameObject flagObject;
 
     private MazeCell[] maze;
     private float cellSize;
@@ -18,9 +25,13 @@ public class Maze_Gameplay : MonoBehaviour
 
     private bool canMove = true;
     private int currentCellIndex;
+    private int finishIndex;
 
-    public void Start() 
-        => InputManager.Instance.PlayerInputActionMap.Gameplay.Movement.performed += TryMove;
+    public void Start()
+    {
+        InputManager.Instance.PlayerInputActionMap.Gameplay.Movement.performed += TryMove;
+        InputManager.Instance.PlayerInputActionMap.Gameplay.Quit.performed += FinishLevel;
+    }
 
     public void GameplaySetup(MazeCell[] maze, float cellSize, Vector2Int mazeSize)
     {
@@ -35,10 +46,16 @@ public class Maze_Gameplay : MonoBehaviour
 
         InputManager.Instance.SwitchActionMap(InputManager.Instance.PlayerInputActionMap.Gameplay);
 
-        currentCellIndex = 0;
-        playerObject = Instantiate(playerPrefab);
+        currentCellIndex = mazeSize.x - 1;
+        finishIndex = maze.Length - mazeSize.x;
+
+        playerObject = playerObject ? playerObject : Instantiate(playerPrefab);
         playerObject.transform.position = GetPosition(currentCellIndex);
+        previousCameraTarget = cameraTarget.Follow;
         cameraTarget.Follow = playerObject.transform;
+
+        flagObject = flagObject ? flagObject : Instantiate(flagPrefab);
+        flagObject.transform.position = GetPosition(finishIndex);
     }
 
     private void TryMove(InputAction.CallbackContext context)
@@ -46,7 +63,6 @@ public class Maze_Gameplay : MonoBehaviour
         if (!canMove) return;
 
         var desiredCellIndex = GetMovementDirection(context);
-        Debug.Log(desiredCellIndex);
         if(desiredCellIndex == -1) return;
         canMove = false;
 
@@ -66,18 +82,27 @@ public class Maze_Gameplay : MonoBehaviour
                 playerObject.transform.position = desiredPosition;
                 canMove = true;
                 currentCellIndex = desiredCellIndex;
+                if (currentCellIndex == finishIndex) FinishLevel();
                 return true;
             }
             return false;
         });
     }
 
+    private void FinishLevel(InputAction.CallbackContext context = default(InputAction.CallbackContext))
+    {
+        InputManager.Instance.SwitchActionMap(InputManager.Instance.PlayerInputActionMap.Generating);
+        Destroy(playerObject);
+        Destroy(flagObject);
+        previousCameraTarget.position = Vector3.zero;
+        cameraTarget.Follow = previousCameraTarget;
+        action.Invoke();    
+    }
+
     private int GetMovementDirection(InputAction.CallbackContext context)
     {
         MazeCell currentCell = maze[currentCellIndex];
         var direction = context.ReadValue<Vector2>();
-        //Debug.Log(currentCell.wallTop + ", " + currentCell.wallLeft + ", " + currentCell.wallBottom + ", " + currentCell.wallRight);
-        //Debug.Log(currentCell.neighbourTop.z + ", " + currentCell.neighbourLeft.z + ", " + currentCell.neighbourBottom.z + ", " + currentCell.neighbourRight.z);
         var x = direction.x;
         if (x > 0 && !currentCell.wallLeft) return CalculateIndex(currentCell.neighbourLeft);
         if (x < 0 && !currentCell.wallRight) return CalculateIndex(currentCell.neighbourRight);

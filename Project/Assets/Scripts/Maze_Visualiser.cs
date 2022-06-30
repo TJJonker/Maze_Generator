@@ -5,6 +5,8 @@ using UnityEngine.Pool;
 
 public class Maze_Visualiser : MonoBehaviour
 {
+    [SerializeField] private Material meshMaterial;
+
     private const float WALL_WIDTH = 0.05f;
     private const int MAX_QUAD_AMOUNT_PER_MESH = 4000;
 
@@ -21,7 +23,11 @@ public class Maze_Visualiser : MonoBehaviour
         mesh = new Mesh();
         // Create the pool
         pool = new ObjectPool<GameObject>(
-            () => new GameObject("MeshObject", typeof(MeshFilter), typeof(MeshRenderer)),
+            () => {
+                var obj = new GameObject("MeshObject", typeof(MeshFilter), typeof(MeshRenderer));
+                obj.GetComponent<MeshRenderer>().material = meshMaterial;
+                return obj;
+                },
             (shape) => shape.gameObject.SetActive(true),
             (shape) => {
                 shape.gameObject.SetActive(false);
@@ -110,7 +116,7 @@ public class Maze_Visualiser : MonoBehaviour
         poolObject.GetComponent<MeshFilter>().mesh = mesh;
 
         #region Debug
-
+        /*
         foreach (var cell in WallCleanedMazeCells)
         {
             if (cell.wallTop) Debug.DrawLine(GetWorldPosition(cell.x, cell.y + 1), GetWorldPosition(cell.x + 1, cell.y + 1), Color.black, 100);
@@ -119,7 +125,7 @@ public class Maze_Visualiser : MonoBehaviour
             if (cell.wallRight) Debug.DrawLine(GetWorldPosition(cell.x + 1, cell.y), GetWorldPosition(cell.x + 1, cell.y + 1), Color.black, 100);
             //break;   
         }
-
+        */
         #endregion
     }
 
